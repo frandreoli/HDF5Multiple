@@ -4,9 +4,8 @@ This repository contains a Julia module to save multiple, structured variables t
 The code converts structs and dictionaries to HDF5 groups, manages naming conflicts, and supports a wide range of data types. 
 Although this is already available within the [JLD2 format](https://github.com/JuliaIO/JLD2.jl), here we provide similar functionalities but all within pure HDF5 encoding.
 
------
 
-## Key Features ✨
+## Key features
 
   * One-line saving: save any number of variables to an HDF5 file with a single command.
   * Flexible naming: provide explicit names for your variables using Pair syntax ("name" =\> data) or let the module create a name automatically based on the variable's type.
@@ -15,11 +14,9 @@ Although this is already available within the [JLD2 format](https://github.com/J
   * Storage of structs and dictionaries: automatically converts nested Julia structs and Dicts into organized HDF5 groups and subgroups.
   * Data type aupport: natively handles a wide variety of types, including complex numbers, symbols, arrays, ranges, tuples, and more.
 
------
-
 ## Usage
 
-### Main Function
+### Main function
 
 The module exports a single function:
 
@@ -34,7 +31,7 @@ h5write_multiple(file_name, data_array...; open="w", overwrite::Bool=true)
       * true (default): the existing data will be deleted and replaced.
       * false: a new, suffixed variable will be created (e.g., my\_data\_1).
 
-### Basic Example
+### Basic example
 
 ```
 using .HDF5Multiple
