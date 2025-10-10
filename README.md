@@ -120,4 +120,4 @@ The module handles complex data structures by recursively converting Julia struc
 
 ## 4 - Dependencies
 
-  * HDF5.jl
+  * [HDF5.jl](https://github.com/JuliaIO/HDF5.jl)
