@@ -8,8 +8,8 @@ Although this is already available within the [JLD2 format](https://github.com/J
 ## Key features
 
   * One-line saving: save any number of variables to an HDF5 file with a single command.
-  * Flexible naming: provide explicit names for your variables using Pair syntax (`"name" =\> data`) or let the module create a name automatically based on the variable's type.
-  * Automatic resolution of conflicts: if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., my\_data\_1, my\_data\_2) to prevent data loss.
+  * Flexible naming: provide explicit names for your variables using Pair syntax (`"name" => data`) or let the module create a name automatically based on the variable's type.
+  * Automatic resolution of conflicts: if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., `my\_data\_1`, `my\_data\_2`) to prevent data loss.
   * Overwrite control: the user can use the overwrite flag to either replace existing data or create new, suffixed entries.
   * Storage of structs and dictionaries: automatically converts nested Julia structs and Dicts into organized HDF5 groups and subgroups.
   * Data type aupport: natively handles a wide variety of types, including complex numbers, symbols, arrays, ranges, tuples, and more.
