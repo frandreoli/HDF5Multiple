@@ -23,27 +23,49 @@ module HDF5Multiple
     end
     #
     #Function to save multiples new variables into a file. 
-    function h5write_multiple(file_name,data_array... ; open="w")
-        file_h5=h5open(file_name*".h5", open)
-        for variable in data_array
-            if variable isa Union{Tuple, AbstractArray}
-                variable_name = variable[1]
-                variable_data = check_struct(variable[2])
-            else
-                variable_data = check_struct(variable)
-                variable_name = string(typeof(variable_data))
-            end
-            variable_data isa AbstractRange ? variable_data = collect(variable_data) : nothing
-            haskey(file_h5, variable_name) ? delete_object(file_h5, variable_name) : nothing
-            try 
-                h5group_check!(file_h5,variable_name,variable_data)
-            catch err
-                close(file_h5)
-                println("ERROR in saving the data labeled:", variable_name, " .\nThe variable content is: ", variable_data)
-                error(err)        
+    function h5write_multiple(file_name,data_array... ; open="w", overwrite::Bool = true)
+        name_list  = Dict{String,Int64}()
+        #
+        h5open(file_name * ".h5", open) do file_h5
+            for variable in data_array
+                #
+                #Inferring the variable name and data
+                if variable isa Pair
+                    variable_name = string(variable[1])
+                    variable_data = check_struct(variable[2])
+                else
+                    variable_data = check_struct(variable)
+                    variable_name = string(typeof(variable))
+                end
+                #
+                #Checking conflicts with existing variables
+                variable_name_start = variable_name
+                while haskey(file_h5, variable_name) 
+                    if variable_name in keys(name_list)
+                        name_list[variable_name]+=1
+                        variable_name =variable_name_start*"_"*string(name_list[variable_name])
+                    elseif overwrite
+                        delete_object(file_h5, variable_name)
+                    else
+                        name_list[variable_name] = 1
+                        variable_name =variable_name*"_"*string(name_list[variable_name])
+                    end
+                end
+                if !(variable_name in keys(name_list)) 
+                    name_list[variable_name] = 0 
+                end
+                #
+                #Properly treating AbstractRanges
+                if variable_data isa AbstractRange variable_data = collect(variable_data) end
+                #
+                try 
+                    h5group_check!(file_h5,variable_name,variable_data)
+                catch err
+                    println("ERROR in saving the data labeled:", variable_name, " .\nThe variable content is: ", variable_data)
+                    error(err)        
+                end
             end
         end
-        close(file_h5)
     end
     #
     #Function to convert a struct into a dictionary
