@@ -8,7 +8,7 @@ Although this is already available within the [JLD2 format](https://github.com/J
 ## Key features
 
   * One-line saving: save any number of variables to an HDF5 file with a single command.
-  * Flexible naming: provide explicit names for your variables using Pair syntax ("name" =\> data) or let the module create a name automatically based on the variable's type.
+  * Flexible naming: provide explicit names for your variables using Pair syntax (`"name" =\> data`) or let the module create a name automatically based on the variable's type.
   * Automatic resolution of conflicts: if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., my\_data\_1, my\_data\_2) to prevent data loss.
   * Overwrite control: the user can use the overwrite flag to either replace existing data or create new, suffixed entries.
   * Storage of structs and dictionaries: automatically converts nested Julia structs and Dicts into organized HDF5 groups and subgroups.
@@ -20,7 +20,7 @@ Although this is already available within the [JLD2 format](https://github.com/J
 
 The module exports a single function:
 
-```
+```Julia
 h5write_multiple(file_name, data_array...; open="w", overwrite::Bool=true)
 ```
 
@@ -33,7 +33,7 @@ h5write_multiple(file_name, data_array...; open="w", overwrite::Bool=true)
 
 ### Basic example
 
-```
+```Julia
 using .HDF5Multiple
 
 # Define some data
@@ -55,7 +55,7 @@ h5write_multiple("experiment_1",
 
 If you provide a variable without a name, its type will be used as the name. If multiple variables of the same type are provided, they will be automatically suffixed.
 
-```
+```Julia
 struct MyParams
     alpha::Float64
     beta::Int
@@ -74,7 +74,7 @@ h5write_multiple("auto_named_data", p1, p2, data)
 
 Complex, nested structures are saved recursively as HDF5 groups.
 
-```
+```Julia
 struct Point{T}
     x::T
     y::T
@@ -96,7 +96,7 @@ h5write_multiple("nested_data", "measurement_1" => m)
 
 The overwrite flag gives you fine-grained control when modifying files.
 
-```
+```Julia
 # Create an initial file
 h5write_multiple("log", "status" => "RUNNING")
 
