@@ -4,19 +4,21 @@ This repository contains a Julia module to save multiple, structured variables t
 The code converts structs and dictionaries to HDF5 groups, manages naming conflicts, and supports a wide range of data types. 
 Although this is already available within the [JLD2 format](https://github.com/JuliaIO/JLD2.jl), here we provide similar functionalities but all within pure HDF5 encoding.
 
+---
 
-## Key features
+## 1 - Key features
 
   * One-line saving: save any number of variables to an HDF5 file with a single command.
   * Flexible naming: provide explicit names for your variables using Pair syntax (`"name" => data`) or let the module create a name automatically based on the variable's type.
-  * Automatic resolution of conflicts: if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., `my\_data\_1`, `my\_data\_2`) to prevent data loss.
+  * Automatic resolution of conflicts: if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., `my_data_1`, `my_data_2`) to prevent data loss.
   * Overwrite control: the user can use the overwrite flag to either replace existing data or create new, suffixed entries.
   * Storage of structs and dictionaries: automatically converts nested Julia structs and Dicts into organized HDF5 groups and subgroups.
   * Data type aupport: natively handles a wide variety of types, including complex numbers, symbols, arrays, ranges, tuples, and more.
 
-## Usage
+---
+## 2 - Usage
 
-### Main function
+### 2.1 - Main function
 
 The module exports a single function:
 
@@ -24,14 +26,14 @@ The module exports a single function:
 h5write_multiple(file_name, data_array...; open="w", overwrite::Bool=true)
 ```
 
-  * file\_name::String: the name of the HDF5 file to create/modify (the .h5 extension is added automatically).
-  * data\_array...: a variable number of Julia objects to save.
-  * open::String: the file open mode. Common modes are "w" (write, create new file) and "cw" (create/read/write, modify existing file). Defaults to "w".
-  * overwrite::Bool: if a variable name already exists in the file:
+  * `file_name::String`: the name of the HDF5 file to create/modify (the .h5 extension is added automatically).
+  * `data_array...`: a variable number of Julia objects to save.
+  * `open::String`: the file open mode. Common modes are "w" (write, create new file) and "cw" (create/read/write, modify existing file). Defaults to "w".
+  * `overwrite::Bool`: if a variable name already exists in the file:
       * true (default): the existing data will be deleted and replaced.
-      * false: a new, suffixed variable will be created (e.g., my\_data\_1).
+      * false: a new, suffixed variable will be created (e.g., `my_data_1`).
 
-### Basic example
+### 2.2 - Basic example
 
 ```Julia
 using .HDF5Multiple
@@ -49,9 +51,9 @@ h5write_multiple("experiment_1",
 )
 ```
 
-### Advanced features
+### 2.3 - Advanced features
 
-#### 1\. Automatic naming
+#### 2.3.1 - Automatic naming
 
 If you provide a variable without a name, its type will be used as the name. If multiple variables of the same type are provided, they will be automatically suffixed.
 
@@ -70,7 +72,7 @@ data = [1.0, 2.0, 3.0]
 h5write_multiple("auto_named_data", p1, p2, data)
 ```
 
-#### 2\. Handling structs and dictionaries
+#### 2.3.2 - Handling structs and dictionaries
 
 Complex, nested structures are saved recursively as HDF5 groups.
 
@@ -92,7 +94,7 @@ m = Measurement("A-42", Point(10.5, -4.3), Dict("voltage" => 5.2, "temp" => 35.1
 h5write_multiple("nested_data", "measurement_1" => m)
 ```
 
-#### 3\. Overwrite control
+#### 2.3.3 - Overwrite control
 
 The overwrite flag gives you fine-grained control when modifying files.
 
@@ -108,14 +110,14 @@ h5write_multiple("log", "status" => "COMPLETE"; open="cw", overwrite=true)
 h5write_multiple("log", "status" => "ARCHIVED"; open="cw", overwrite=false)
 ```
 
------
 
-## How it Works
 
-The module handles complex data structures by recursively converting Julia structs and Dicts into HDF5 groups. When a struct is saved, its original type name is stored as a group attribute (struct\_type), which can be useful for manual inspection or for writing a corresponding function to read and reconstruct the data.
+## 3 - How it Works
 
------
+The module handles complex data structures by recursively converting Julia structs and Dicts into HDF5 groups. When a struct is saved, its original type name is stored as a group attribute (`struct_type`), which can be useful for manual inspection or for writing a corresponding function to read and reconstruct the data.
 
-## Dependencies
+
+
+## 4 - Dependencies
 
   * HDF5.jl
