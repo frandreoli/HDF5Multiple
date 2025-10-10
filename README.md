@@ -13,7 +13,7 @@ Here we provide those features within a purely HDF5 encoding.
   * **Automatic resolution of conflicts:** if a variable name already exists in the file or is used multiple times in the same call, the module automatically appends a numeric suffix (e.g., `my_data_1`, `my_data_2`) to prevent data loss.
   * **Overwrite control:** the user can use the overwrite flag to either replace existing data or create new, suffixed entries.
   * **Storage of structs and dictionaries:** automatically converts nested Julia structs and Dicts into organized HDF5 groups and subgroups.
-  * **Data type aupport:** natively handles a variety of types, including complex numbers, symbols, arrays, ranges, tuples, and more.
+  * **Data type support:** natively handles a variety of types, including complex numbers, symbols, arrays, ranges, tuples, and more.
 
 
 ## 2 - Usage
