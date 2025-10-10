@@ -1,0 +1,10 @@
+name = "HDF5Multiple"
+uuid = "ea4ee4ae-2d03-4f9f-9a11-0866d41fd3ea"
+authors = ["frandreoli <fra.andreoli@hotmail.it>"]
+version = "0.1.0"
+
+[deps]
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+
+[compat]
+HDF5 = "0.17.2"
