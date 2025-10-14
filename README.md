@@ -3,7 +3,7 @@
 This repository contains a Julia module to save multiple, structured variables to an HDF5 file, with a single function call. 
 The code converts structs and dictionaries to HDF5 groups, manages naming conflicts, and supports a wide range of data types. 
 Similar functionalities are already available within the [JLD2 format](https://github.com/JuliaIO/JLD2.jl). 
-Here we provide those features within a purely HDF5 encoding.
+Here, we provide those features within a purely HDF5 encoding.
 
 
 ## 1 - Key features
