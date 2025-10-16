@@ -112,7 +112,7 @@ h5write_multiple("log", "status" => "ARCHIVED"; open="cw", overwrite=false)
 
 
 
-## 3 - How it Works
+## 3 - How it works
 
 The module handles complex data structures by recursively converting Julia structs and Dicts into HDF5 groups. When a struct is saved, its original type name is stored as a group attribute (`struct_type`), which can be useful for manual inspection or for writing a corresponding function to read and reconstruct the data.
 
