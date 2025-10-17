@@ -93,7 +93,13 @@ module HDF5Multiple
             value = Tuple(value)
         end
         value_type = typeof(value)
-        if  isstructtype(value_type) && value_type!=String && !(value_type <: AbstractArray) && !(value_type <: Complex)
+        if value isa Enum
+            dict = Dict{Any,Any}()
+            dict[:__h5_struct_type_attribute] = string(value_type)
+            dict["value"] = string(value)
+            dict["possible_values"] = string.(collect(instances(value_type)))
+            return dict
+        elseif  isstructtype(value_type) && value_type!=String && !(value_type <: AbstractArray) && !(value_type <: Complex)
             return struct2dict(value)
         else
             return value
