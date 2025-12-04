@@ -1,5 +1,3 @@
-
-
 module HDF5Multiple
     #     
     export h5write_multiple
@@ -7,14 +5,14 @@ module HDF5Multiple
     using HDF5
     #
     #Function to create groups and subgroups for dictionaries
-    function h5group_check!(file_h5,variable_name,variable_data)
+    function h5data_write!(file_h5,variable_name,variable_data)
         if variable_data isa Dict
             group = create_group(file_h5,variable_name)
             for (key, value) in variable_data
                 if key==:__h5_struct_type_attribute
                     attributes(group)["struct_type"] = value
                 else
-                    h5group_check!(group,key,value)
+                    h5data_write!(group,key,value)
                 end
             end
         elseif !(variable_data isa Function)
@@ -32,10 +30,10 @@ module HDF5Multiple
                 #Inferring the variable name and data
                 if variable isa Pair
                     variable_name = string(variable[1])
-                    variable_data = check_struct(variable[2])
+                    variable_data = h5data_encode(variable[2])
                 else
-                    variable_data = check_struct(variable)
                     variable_name = string(typeof(variable))
+                    variable_data = h5data_encode(variable)
                 end
                 #
                 #Checking conflicts with existing variables
@@ -59,7 +57,7 @@ module HDF5Multiple
                 if variable_data isa AbstractRange variable_data = collect(variable_data) end
                 #
                 try 
-                    h5group_check!(file_h5,variable_name,variable_data)
+                    h5data_write!(file_h5,variable_name,variable_data)
                 catch err
                     println("ERROR in saving the data labeled:", variable_name, " .\nThe variable content is: ", variable_data)
                     error(err)        
@@ -68,11 +66,12 @@ module HDF5Multiple
         end
     end
     #
-    #Function to convert a struct into a dictionary
-    function struct2dict(p)
+    #Function to convert a struct into a dictionary of data and metadata
+    function h5handle_struct(p)
         if (typeof(p) <: Dict)
-            sol = Dict(key=>check_struct(value) for (key,value) in p )
+            sol = Dict(key=>h5data_encode(value) for (key,value) in p )
         else
+            # Create a dictionary to hold info
             sol = Dict{Any,Any}()
             sol[:__h5_struct_type_attribute] = string(typeof(p))
             if (typeof(p) <: Symbol)
@@ -80,15 +79,41 @@ module HDF5Multiple
             else
                 field_names = fieldnames(typeof(p))
                 for name in field_names
-                    sol[string(name)] = check_struct(getfield(p, name))
+                    sol[string(name)] = h5data_encode(getfield(p, name))
                 end
             end
         end
         return sol
     end
     #
+    #Function to convert a function into a dictionary of metadata
+    function h5handle_function(f::Function)
+        # Create a dictionary to hold info
+        info = Dict{Any, Any}()
+        info[:__h5_struct_type_attribute] = "Function"
+        info["name"] = string(nameof(f))
+        # Try to find source code location
+        ms = methods(f)
+        if !isempty(ms)
+            m = first(ms) # Get the first method definition
+            info["module"] = string(m.module)
+            info["file"] = string(m.file)
+            info["line"] = m.line
+            info["arguments"] = string(m.nargs) 
+        else
+            info["note"] = "Built-in or anonymous function with no specific methods table."
+        end
+        return info
+    end
+    #
+    #Function to handle blacklisted elements
+    function h5is_blacklisted(value)
+        type_str = string(typeof(value))
+        return occursin("Plots.Plot", type_str)
+    end
+    #
     #Function to turn structures into dictionaries
-    function check_struct(value)
+    function h5data_encode(value)
         if value isa AbstractArray{Any}
             value = Tuple(value)
         end
@@ -99,8 +124,16 @@ module HDF5Multiple
             dict["value"] = string(value)
             dict["possible_values"] = string.(collect(instances(value_type)))
             return dict
-        elseif  isstructtype(value_type) && value_type!=String && !(value_type <: AbstractArray) && !(value_type <: Complex)
-            return struct2dict(value)
+        #
+        elseif value isa Function
+            return h5handle_function(value)
+        #
+        elseif h5is_blacklisted(value)
+            return string("NOT SAVED: Object of type ", value_type)
+        #
+        elseif isstructtype(value_type) && value_type!=String && !(value_type <: AbstractArray) && !(value_type <: Complex)
+            return h5handle_struct(value)
+        #
         else
             return value
         end
