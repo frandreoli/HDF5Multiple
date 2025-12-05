@@ -15,7 +15,8 @@ module HDF5Multiple
                     h5data_write!(group,key,value)
                 end
             end
-        elseif !(variable_data isa Function)
+        else
+            if variable_data isa AbstractRange variable_data = collect(variable_data) end
             file_h5[variable_name]=variable_data
         end
     end
